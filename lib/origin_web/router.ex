@@ -36,7 +36,6 @@ defmodule OriginWeb.Router do
 
   # https://stackoverflow.com/questions/39199899/how-to-get-client-ip-in-phoenix-rest-api
   def get(conn) do
-    IO.inspect(Plug.Conn.get_req_header(conn, "x-forwarded-for"))
     forwarded_for = List.first(Plug.Conn.get_req_header(conn, "x-forwarded-for"))
 
     if forwarded_for do
