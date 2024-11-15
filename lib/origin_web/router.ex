@@ -1,6 +1,9 @@
 defmodule OriginWeb.Router do
   use OriginWeb, :router
 
+  # Logger
+  require Logger
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -18,16 +21,31 @@ defmodule OriginWeb.Router do
   def introspect(conn, _opts) do
     ip = conn.remote_ip |> Tuple.to_list() |> Enum.join(".")
 
-    IO.puts("""
+    Logger.info("""
     Verb: #{inspect(conn.method)}
     Host: #{inspect(conn.host)}
-    From ip: #{ip}
+    From IP: #{ip}}
+    From IP: #{get(conn)}
     """)
 
     # Headers: #{inspect(conn.req_headers)}
 
     # Return the connexion
     conn
+  end
+
+  # https://stackoverflow.com/questions/39199899/how-to-get-client-ip-in-phoenix-rest-api
+  def get(conn) do
+    IO.inspect(Plug.Conn.get_req_header(conn, "x-forwarded-for"))
+    forwarded_for = List.first(Plug.Conn.get_req_header(conn, "x-forwarded-for"))
+
+    if forwarded_for do
+      String.split(forwarded_for, ",")
+      |> Enum.map(&String.trim/1)
+      |> List.first()
+    else
+      to_string(:inet_parse.ntoa(conn.remote_ip))
+    end
   end
 
   pipeline :api do

@@ -34,8 +34,14 @@ config :origin, Origin.Mailer, adapter: Swoosh.Adapters.Local
 config :esbuild,
   version: "0.17.11",
   origin: [
-    args:
-      ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
+    args: ~w(
+      js/app.js
+      js/snake/snake.js
+      --bundle
+      --target=es2017
+      --outdir=../priv/static/assets
+      --external:/fonts/*
+      --external:/images/*),
     cd: Path.expand("../assets", __DIR__),
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
@@ -46,6 +52,8 @@ config :tailwind,
   origin: [
     args: ~w(
       --config=tailwind.config.js
+      --input=css/snake/snake.css
+      --output=../priv/static/assets/snake/snake.css
       --input=css/app.css
       --output=../priv/static/assets/app.css
     ),
